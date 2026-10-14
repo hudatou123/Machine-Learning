@@ -1,0 +1,256 @@
+bytes: b' t' <-> token: < t>
+bytes: b'he' <-> token: <he>
+bytes: b'in' <-> token: <in>
+bytes: b' a' <-> token: < a>
+bytes: b'er' <-> token: <er>
+bytes: b'on' <-> token: <on>
+bytes: b' the' <-> token: < the>
+bytes: b're' <-> token: <re>
+bytes: b'an' <-> token: <an>
+bytes: b'at' <-> token: <at>
+bytes: b'en' <-> token: <en>
+bytes: b' o' <-> token: < o>
+bytes: b'ed' <-> token: <ed>
+bytes: b'st' <-> token: <st>
+bytes: b'or' <-> token: <or>
+bytes: b'al' <-> token: <al>
+bytes: b' w' <-> token: < w>
+bytes: b'ar' <-> token: <ar>
+bytes: b'it' <-> token: <it>
+bytes: b' of' <-> token: < of>
+bytes: b'nd' <-> token: <nd>
+bytes: b' s' <-> token: < s>
+bytes: b' in' <-> token: < in>
+bytes: b' f' <-> token: < f>
+bytes: b'is' <-> token: <is>
+bytes: b' c' <-> token: < c>
+bytes: b'es' <-> token: <es>
+bytes: b' p' <-> token: < p>
+bytes: b'ic' <-> token: <ic>
+bytes: b' b' <-> token: < b>
+bytes: b'ing' <-> token: <ing>
+bytes: b'ion' <-> token: <ion>
+bytes: b' and' <-> token: < and>
+bytes: b'as' <-> token: <as>
+bytes: b'\n\n' <-> token: <>
+bytes: b'le' <-> token: <le>
+bytes: b'ro' <-> token: <ro>
+bytes: b' S' <-> token: < S>
+bytes: b' to' <-> token: < to>
+bytes: b' m' <-> token: < m>
+bytes: b' d' <-> token: < d>
+bytes: b' A' <-> token: < A>
+bytes: b' 1' <-> token: < 1>
+bytes: b'ou' <-> token: <ou>
+bytes: b'il' <-> token: <il>
+bytes: b'ent' <-> token: <ent>
+bytes: b' C' <-> token: < C>
+bytes: b'20' <-> token: <20>
+bytes: b'am' <-> token: <am>
+bytes: b' T' <-> token: < T>
+bytes: b' h' <-> token: < h>
+bytes: b' M' <-> token: < M>
+bytes: b'ol' <-> token: <ol>
+bytes: b'ch' <-> token: <ch>
+bytes: b'om' <-> token: <om>
+bytes: b' l' <-> token: < l>
+bytes: b' re' <-> token: < re>
+bytes: b'el' <-> token: <el>
+bytes: b'ce' <-> token: <ce>
+bytes: b'ad' <-> token: <ad>
+bytes: b'ur' <-> token: <ur>
+bytes: b' B' <-> token: < B>
+bytes: b' was' <-> token: < was>
+bytes: b'ct' <-> token: <ct>
+bytes: b'ers' <-> token: <ers>
+bytes: b' (' <-> token: < (>
+bytes: b'iv' <-> token: <iv>
+bytes: b'ation' <-> token: <ation>
+bytes: b'th' <-> token: <th>
+bytes: b' P' <-> token: < P>
+bytes: b' F' <-> token: < F>
+bytes: b' 20' <-> token: < 20>
+bytes: b' D' <-> token: < D>
+bytes: b'et' <-> token: <et>
+bytes: b' I' <-> token: < I>
+bytes: b' n' <-> token: < n>
+bytes: b'la' <-> token: <la>
+bytes: b'ist' <-> token: <ist>
+bytes: b' e' <-> token: < e>
+bytes: b' th' <-> token: < th>
+bytes: b'id' <-> token: <id>
+bytes: b' on' <-> token: < on>
+bytes: b' H' <-> token: < H>
+bytes: b'ir' <-> token: <ir>
+bytes: b'ig' <-> token: <ig>
+bytes: b'us' <-> token: <us>
+bytes: b' 19' <-> token: < 19>
+bytes: b'ot' <-> token: <ot>
+bytes: b' R' <-> token: < R>
+bytes: b'im' <-> token: <im>
+bytes: b'ly' <-> token: <ly>
+bytes: b' as' <-> token: < as>
+bytes: b' for' <-> token: < for>
+bytes: b'un' <-> token: <un>
+bytes: b' G' <-> token: < G>
+bytes: b' L' <-> token: < L>
+bytes: b' |' <-> token: < |>
+bytes: b'em' <-> token: <em>
+bytes: b'ra' <-> token: <ra>
+bytes: b' g' <-> token: < g>
+bytes: b'ut' <-> token: <ut>
+bytes: b' J' <-> token: < J>
+bytes: b' is' <-> token: < is>
+bytes: b'ul' <-> token: <ul>
+bytes: b' ||' <-> token: < ||>
+bytes: b' st' <-> token: < st>
+bytes: b'ith' <-> token: <ith>
+bytes: b' he' <-> token: < he>
+bytes: b'um' <-> token: <um>
+bytes: b' W' <-> token: < W>
+bytes: b' be' <-> token: < be>
+bytes: b' N' <-> token: < N>
+bytes: b'ow' <-> token: <ow>
+bytes: b' with' <-> token: < with>
+bytes: b' The' <-> token: < The>
+bytes: b' by' <-> token: < by>
+bytes: b'rom' <-> token: <rom>
+bytes: b' al' <-> token: < al>
+bytes: b' E' <-> token: < E>
+bytes: b'and' <-> token: <and>
+bytes: b'ter' <-> token: <ter>
+bytes: b"'s" <-> token: <'s>
+bytes: b'os' <-> token: <os>
+bytes: b'ia' <-> token: <ia>
+bytes: b'op' <-> token: <op>
+bytes: b'ber' <-> token: <ber>
+bytes: b' at' <-> token: < at>
+bytes: b'ay' <-> token: <ay>
+bytes: b'ver' <-> token: <ver>
+bytes: b' de' <-> token: < de>
+bytes: b'oc' <-> token: <oc>
+bytes: b'all' <-> token: <all>
+bytes: b'\xe2\x80' <-> token: <�>
+bytes: b'ian' <-> token: <ian>
+bytes: b' an' <-> token: < an>
+bytes: b' O' <-> token: < O>
+bytes: b' from' <-> token: < from>
+bytes: b'ain' <-> token: <ain>
+bytes: b'her' <-> token: <her>
+bytes: b'ces' <-> token: <ces>
+bytes: b'est' <-> token: <est>
+bytes: b'ag' <-> token: <ag>
+bytes: b' that' <-> token: < that>
+bytes: b' K' <-> token: < K>
+bytes: b'ate' <-> token: <ate>
+bytes: b' wh' <-> token: < wh>
+bytes: b' "' <-> token: < ">
+bytes: b' con' <-> token: < con>
+bytes: b'ri' <-> token: <ri>
+bytes: b'ac' <-> token: <ac>
+bytes: b'up' <-> token: <up>
+bytes: b' se' <-> token: < se>
+bytes: b's,' <-> token: <s,>
+bytes: b'ub' <-> token: <ub>
+bytes: b'ort' <-> token: <ort>
+bytes: b'art' <-> token: <art>
+bytes: b' v' <-> token: < v>
+bytes: b'ill' <-> token: <ill>
+bytes: b' U' <-> token: < U>
+bytes: b' it' <-> token: < it>
+bytes: b'19' <-> token: <19>
+bytes: b's.' <-> token: <s.>
+bytes: b' pla' <-> token: < pla>
+bytes: b'ies' <-> token: <ies>
+bytes: b' com' <-> token: < com>
+bytes: b' pro' <-> token: < pro>
+bytes: b'ity' <-> token: <ity>
+bytes: b'ip' <-> token: <ip>
+bytes: b'od' <-> token: <od>
+bytes: b'ak' <-> token: <ak>
+bytes: b'res' <-> token: <res>
+bytes: b'ard' <-> token: <ard>
+bytes: b'if' <-> token: <if>
+bytes: b'ran' <-> token: <ran>
+bytes: b'ud' <-> token: <ud>
+bytes: b'ld' <-> token: <ld>
+bytes: b'ew' <-> token: <ew>
+bytes: b'fer' <-> token: <fer>
+bytes: b'ich' <-> token: <ich>
+bytes: b'av' <-> token: <av>
+bytes: b' \n' <-> token: < >
+bytes: b' his' <-> token: < his>
+bytes: b'ov' <-> token: <ov>
+bytes: b' 2' <-> token: < 2>
+bytes: b'ug' <-> token: <ug>
+bytes: b'ren' <-> token: <ren>
+bytes: b'\xe2\x80\x93' <-> token: <–>
+bytes: b' St' <-> token: < St>
+bytes: b'pe' <-> token: <pe>
+bytes: b'ment' <-> token: <ment>
+bytes: b'\n\nR' <-> token: <R>
+bytes: b'ue' <-> token: <ue>
+bytes: b'ary' <-> token: <ary>
+bytes: b'ish' <-> token: <ish>
+bytes: b'ated' <-> token: <ated>
+bytes: b' ch' <-> token: < ch>
+bytes: b'The' <-> token: <The>
+bytes: b' Ch' <-> token: < Ch>
+bytes: b'ore' <-> token: <ore>
+bytes: b'ast' <-> token: <ast>
+bytes: b'ial' <-> token: <ial>
+bytes: b'und' <-> token: <und>
+bytes: b' r' <-> token: < r>
+bytes: b'ric' <-> token: <ric>
+bytes: b'ab' <-> token: <ab>
+bytes: b'igh' <-> token: <igh>
+bytes: b'our' <-> token: <our>
+bytes: b' In' <-> token: < In>
+bytes: b'ong' <-> token: <ong>
+bytes: b'og' <-> token: <og>
+bytes: b'oun' <-> token: <oun>
+bytes: b'ap' <-> token: <ap>
+bytes: b'end' <-> token: <end>
+bytes: b'00' <-> token: <00>
+bytes: b'e,' <-> token: <e,>
+bytes: b' V' <-> token: < V>
+bytes: b' 201' <-> token: < 201>
+bytes: b'ant' <-> token: <ant>
+bytes: b' or' <-> token: < or>
+bytes: b'mer' <-> token: <mer>
+bytes: b' play' <-> token: < play>
+bytes: b'feren' <-> token: <feren>
+bytes: b'ok' <-> token: <ok>
+bytes: b'ep' <-> token: <ep>
+bytes: b' ex' <-> token: < ex>
+bytes: b'ust' <-> token: <ust>
+bytes: b' te' <-> token: < te>
+bytes: b'ire' <-> token: <ire>
+bytes: b'ork' <-> token: <ork>
+bytes: b'ell' <-> token: <ell>
+bytes: b'ive' <-> token: <ive>
+bytes: b'\n\nRe' <-> token: <Re>
+bytes: b'se' <-> token: <se>
+bytes: b'ere' <-> token: <ere>
+bytes: b'ction' <-> token: <ction>
+bytes: b'ign' <-> token: <ign>
+bytes: b' le' <-> token: < le>
+bytes: b' He' <-> token: < He>
+bytes: b'qu' <-> token: <qu>
+bytes: b'ame' <-> token: <ame>
+bytes: b'ferences' <-> token: <ferences>
+bytes: b'rit' <-> token: <rit>
+bytes: b'so' <-> token: <so>
+bytes: b'uc' <-> token: <uc>
+bytes: b'ge' <-> token: <ge>
+bytes: b'ther' <-> token: <ther>
+bytes: b'ure' <-> token: <ure>
+bytes: b'\n\nReferences' <-> token: <References>
+bytes: b'ine' <-> token: <ine>
+bytes: b'man' <-> token: <man>
+bytes: b' were' <-> token: < were>
+bytes: b'are' <-> token: <are>
+bytes: b' which' <-> token: < which>
+bytes: b' un' <-> token: < un>
+bytes: b'hed' <-> token: <hed>
+bytes: b' comp' <-> token: < comp>

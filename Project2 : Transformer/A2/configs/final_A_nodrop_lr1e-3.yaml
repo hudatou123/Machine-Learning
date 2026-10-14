@@ -1,0 +1,16 @@
+output_dir: outputs/final_A_nodrop_lr1e-3
+tokenizer_encoding: gpt2
+model_config:
+  n_embd: 256
+  n_head: 4
+  n_positions: 128
+  n_layer: 4
+  p_dropout: 0.0
+device: auto
+batch_size: 64
+seq_len: 128
+num_warmup_steps: 1000
+num_training_steps: 122100
+grad_accumulation_steps: 1
+min_lr: 0.0001
+max_lr: 0.001

@@ -1,0 +1,19 @@
+# environments / caches
+.venv/
+.cache/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.DS_Store
+__MACOSX/
+wandb/
+# credentials
+.netrc
+*wandb-key*
+.env
+# archives and documents
+*.zip
+*.tar.gz
+*.pdf
+# HPC job logs (contain cluster account paths)
+hpc/slurm-*.out

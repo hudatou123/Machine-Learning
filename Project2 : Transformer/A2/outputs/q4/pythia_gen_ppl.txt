@@ -1,0 +1,6 @@
+== pythia T=0.1
+Perplexity: 5.764814922974859
+== pythia T=0.5
+Perplexity: 9.173437289259727
+== pythia T=1.0
+Perplexity: 19.489154980817535

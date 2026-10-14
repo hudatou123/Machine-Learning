@@ -1,0 +1,8 @@
+== neu_orig
+Perplexity: 7.07828219187227
+== neu_nothe
+Perplexity: 9.003205181022693
+== jabberwocky
+Perplexity: 1.5804758103928997
+== mimic
+Perplexity: 16.99408204651591

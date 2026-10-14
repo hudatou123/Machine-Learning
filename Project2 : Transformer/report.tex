@@ -1,0 +1,291 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[scaled=0.96]{helvet} % Sets up Helvetica font
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{listings}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\titleformat{\section}[hang]{\color{mauve}\normalfont\sffamily\Large}{\thesection}{1em}{}
+\titleformat{\subsection}[hang]{\color{mauve}\normalfont\sffamily\large}{\thesubsection}{1em}{}
+
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, breaklines=true, frame=single}
+
+\title{Assignment 2: Transformer}
+\author{[Your Name], [NUID]}
+\date{Due date: Month Date, 11:59 PM}
+
+\begin{document}
+\maketitle
+
+%==================================================================
+\section*{Question 1.1}
+
+\subsection*{1.1.A}
+I used the \texttt{google-bert/bert-base-cased} (WordPiece) tokenizer.
+\begin{itemize}
+  \item \textbf{Not injective:} BERT's pre-tokenizer splits on whitespace and discards it, so \texttt{"Hello world"} and \texttt{"Hello\ \ \ \textbackslash t world"} are different strings that map to the identical token sequence. Any amount or kind of whitespace between words is lost.
+  \item \textbf{Not invertible:} Characters outside BERT's vocabulary are mapped to \texttt{[UNK]}, so \texttt{"I love NLP }\textit{[robot emoji, U+1F916]}\texttt{"} decodes to \texttt{"I love NLP [UNK]"}. The original emoji can never be recovered.
+  \item \textbf{Not preserving concatenation:} \texttt{"hello"} and \texttt{"world"} tokenize to \texttt{[hello]} and \texttt{[world]}, but \texttt{"helloworld"} tokenizes to \texttt{[hello, \#\#world]}. WordPiece uses a separate continuation token \texttt{\#\#world} inside a word, so $\text{tokenize}(a+b) \neq \text{tokenize}(a)+\text{tokenize}(b)$.
+\end{itemize}
+
+\subsection*{1.1.B}
+Any string $s = c_1 c_2 \cdots c_n$ is the concatenation of its single characters, so if a tokenizer preserves concatenation then
+\[
+\text{tokenize}(s) = \text{tokenize}(c_1) + \text{tokenize}(c_2) + \cdots + \text{tokenize}(c_n).
+\]
+The output is therefore fully determined by how each single character is tokenized, and a multi-character token (e.g.\ ``th'') can never be produced. The vocabulary effectively reduces to the alphabet $\mathcal{A}$, which is exactly the trivial tokenizer. Any useful merge of characters into a longer token necessarily breaks concatenation at that merge boundary.
+
+%==================================================================
+\section*{Question 1.2}
+Implemented \texttt{ASCIIBPETokenizer.merge()}, \texttt{encode()} and \texttt{decode()} in \texttt{src/tokenizer/bpe.py}; all \texttt{test\_*\_merge()}, \texttt{test\_encode()} and \texttt{test\_decode()} tests pass.
+
+%==================================================================
+\section*{Question 1.3}
+
+\subsection*{1.3.A}
+The longest learned token is \texttt{"\textbackslash n\textbackslash nReferences"} (12 bytes, with the fragment \texttt{"ferences"} also in the vocabulary), followed by common English words such as \texttt{" which"}, \texttt{" with"}, \texttt{" from"} and \texttt{" that"}. This suggests the training data is Wikipedia-style articles, where nearly every page ends with a ``References'' section.
+
+\subsection*{1.3.B}
+BPE merges are learned directly from frequent strings in the training corpus, so the vocabulary and the merge order reveal what text appeared in it and how often. If private strings such as names, email addresses, phone numbers or API keys occur often enough, they can become tokens themselves and be read off the published tokenizer.
+
+%==================================================================
+\section*{Question 1.4}
+
+\subsection*{1.4.A}
+Yes. The English text uses 119 tokens while its Thai translation uses 636 tokens, about $5.3\times$ more. The tokenizer was trained only on English, so it learned no Thai merges, and each Thai character (3 bytes in UTF-8) falls back to roughly byte-level tokens.
+
+\subsection*{1.4.B}
+Speakers of low-resource languages pay more per sentence under per-token pricing, fit less content into the model's fixed context window, and get slower generation. Their text is also split into less meaningful units, which tends to lower model quality for those languages.
+
+%==================================================================
+\section*{Question 2.1}
+Weight tying uses the same matrix for the input token embedding and for the output projection that maps the final hidden state to vocabulary logits. This removes a whole $v \times d$ parameter matrix, which is a large fraction of a small language model's parameters, and acts as a regularizer. Press and Wolf show that the output embedding is itself a good word embedding, and that tying the two improves perplexity while making the model much smaller.
+
+%==================================================================
+\section*{Question 2.2}
+\begin{lstlisting}[language=Python]
+logits = torch.matmul(h, E.T)   # (b, s, d) @ (d, v) -> (b, s, v)
+\end{lstlisting}
+Equivalently, \texttt{torch.einsum("bsd,vd->bsv", h, E)}.
+
+%==================================================================
+\section*{Question 2.3}
+Completed \texttt{src/lm/model.py} (\texttt{MultiHeadAttention}, \texttt{FeedForward}, \texttt{DecoderBlock}, \texttt{DecoderLM}); all five tests in \texttt{test\_model.py} pass.
+
+%==================================================================
+\section*{Question 3.1}
+Completed \texttt{src/lm/train.py}; all tests in \texttt{test\_train.py} pass, including \texttt{test\_train\_sanity\_check()}.
+
+%==================================================================
+\section*{Question 3.2}
+
+\subsection*{3.2.A}
+Warmup phase, $t \in [0, a)$:
+\[
+\text{lr}(t) = \text{lr}_{\max} \cdot \frac{t}{a}
+\]
+Annealing phase, $t \in [a, b)$:
+\[
+\text{lr}(t) = \text{lr}_{\min} + \frac{1}{2}\left(\text{lr}_{\max} - \text{lr}_{\min}\right)\left(1 + \cos\!\left(\pi \cdot \frac{t - a}{b - a}\right)\right)
+\]
+For $t \geq b$, $\text{lr}(t) = \text{lr}_{\min}$.
+
+\subsection*{3.2.B}
+Warmup avoids unstable, very large updates at the start, when the weights are random and Adam's moment estimates are still unreliable. The large learning rate early on then makes fast progress, and the smooth decay to a small learning rate at the end lets the model settle into a lower-loss minimum, which usually gives a better final loss than any single constant learning rate.
+
+%==================================================================
+\section*{Question 3.3}
+
+\subsection*{3.3.A}
+Validation loss of GPT-tiny: \textbf{7.062} (validation perplexity $\approx 1167$).
+
+\subsection*{3.3.B}
+Training loss saturates after roughly \textbf{1,500 steps}. It drops from 10.83 to about 7.35 by step 1,000, then decreases by only about 0.2 more over the remaining 1,000 steps (7.13 at step 2,000).
+
+\subsection*{3.3.C}
+% TODO: replace with your W&B screenshot (run offline-run-20261013_145043-1sykqx63)
+\begin{center}
+  % \includegraphics[width=0.8\linewidth]{gpt_tiny_train_loss.png}
+  \textit{[W\&B training loss screenshot here]}
+\end{center}
+
+%==================================================================
+\section*{Question 3.4}
+
+\begin{center}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Config & n\_embd & n\_head & n\_layer & max\_lr & steps & train FLOPs & val loss & val PPL \\
+\midrule
+A & 256 & 4 & 4 & $5\times10^{-4}$   & 2400 & $9.63\times10^{14}$ & 5.763 & 318.34 \\
+B & 256 & 4 & 4 & $1.5\times10^{-3}$ & 2400 & $9.63\times10^{14}$ & 5.797 & 329.36 \\
+C & 128 & 4 & 4 & $1.5\times10^{-3}$ & 5500 & $9.97\times10^{14}$ & 5.440 & \textbf{230.50} \\
+D & 256 & 4 & 8 & $1.5\times10^{-3}$ & 2000 & $9.70\times10^{14}$ & 5.900 & 365.14 \\
+E & 320 & 5 & 6 & $1.5\times10^{-3}$ & 1600 & $9.44\times10^{14}$ & 5.965 & 389.48 \\
+\bottomrule
+\end{tabular}
+\end{center}
+All runs used \texttt{batch\_size} 32, \texttt{seq\_len} 128, \texttt{n\_positions} 128, 100 warmup steps, \texttt{min\_lr} $10^{-4}$ and no gradient accumulation.
+
+\subsection*{3.4.A}
+I kept \texttt{batch\_size} $= 32$ and \texttt{seq\_len} $=$ \texttt{n\_positions} $= 128$ fixed and varied model width (\texttt{n\_embd} 128--320), depth (\texttt{n\_layer} 4--8) and peak learning rate ($5\times10^{-4}$ vs.\ $1.5\times10^{-3}$). For every configuration I chose \texttt{num\_training\_steps} so that the total training compute, computed with the FLOP counter in \texttt{train.py}, was just under the $10^{15}$ budget ($9.4\times10^{14}$--$10^{15}$). Smaller models therefore trained for more steps. Each model was trained with cosine annealing (100 warmup steps, \texttt{min\_lr} $= 10^{-4}$) and evaluated by perplexity on the held-out validation set, and the configuration with the lowest validation perplexity was selected.
+
+\subsection*{3.4.B}
+The smallest model, C (\texttt{n\_embd} 128, 4 layers, lr $1.5\times10^{-3}$, 5,500 steps), was clearly best with a validation PPL of 230.5, compared with 318.3 for the d256/L4 model (A). Under such a small budget, seeing more tokens matters more than model capacity. Making the model wider or deeper (D, E) reduced the number of affordable steps and gave the worst results (PPL 365 and 389). For the d256/L4 model, raising the learning rate from $5\times10^{-4}$ to $1.5\times10^{-3}$ (A vs.\ B) slightly hurt the final PPL (318 vs.\ 329), even though training loss dropped faster early on.
+
+\subsection*{3.4.C}
+\begin{lstlisting}
+output_dir: outputs/final
+tokenizer_encoding: gpt2
+model_config:
+  n_embd: 128
+  n_head: 4
+  n_positions: 128
+  n_layer: 4
+device: auto
+batch_size: 128
+seq_len: 128
+num_warmup_steps: 1000
+num_training_steps: 135000
+grad_accumulation_steps: 1
+min_lr: 0.00015000000000000001
+max_lr: 0.0015
+\end{lstlisting}
+The final run keeps the model hyperparameters of configuration C and only scales batch size and number of steps to $\approx 9.79\times10^{16}$ FLOPs.
+
+%==================================================================
+\section*{Question 3.5}
+Final model (configuration C, $\approx 9.79\times10^{16}$ training FLOPs): validation loss \textbf{4.268}, validation perplexity \textbf{71.35}.
+
+% Optional sentence -- delete if you do not want it:
+For comparison, the same budget with the d256/L4 model from configuration A gave validation loss 4.091 (PPL 59.78), which suggests that for a $100\times$ larger budget a larger model would have been preferable.
+
+%==================================================================
+\section*{Question 4.1}
+Implemented \texttt{generate()} and \texttt{softmax\_with\_temperature()} in \texttt{src/lm/generate.py}; \texttt{test\_generate.py} passes.
+
+%==================================================================
+\section*{Question 4.2}
+
+\subsection*{4.2.A}
+Settings for both models: \texttt{max\_new\_tokens} $= 48$, temperature $\in \{0.1, 0.5, 1.0\}$. Below, \texttt{\textbackslash n} marks a newline in the generated text.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+Temperature & My model PPL & Pythia-1.4B PPL \\
+\midrule
+0.1 & 3.45 & 5.76 \\
+0.5 & 4.62 & 9.17 \\
+1.0 & 461.45 & 19.49 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Prefix 1.} \textit{Hammer a tube called a spile into the bark of a maple tree and its translucent yellow sap will start flowing out; the tree has been tapped (pictured). This gloop drips from some 55m Canadian maple trees today, raw material for the tangy golden syrup which is one of the country's proudest exports.}
+
+\begin{itemize}
+  \item \textbf{My model, $T=0.1$:}  \texttt{\textbackslash n} The first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the
+  \item \textbf{Pythia-1.4B, $T=0.1$:}  \texttt{\textbackslash n}  \texttt{\textbackslash n} The sap is collected in the spring, when the maple trees are still dormant, and is then boiled down to make maple syrup. \texttt{\textbackslash n}  \texttt{\textbackslash n} The sap is then collected in the spring, when the maple trees are still dormant, and
+  \item \textbf{My model, $T=0.5$:}  In the last half of the year, the whole year, the first half of the most of the most of the world, the second half of the first half of the first half of the year, the first half of the year, the
+  \item \textbf{Pythia-1.4B, $T=0.5$:}  \texttt{\textbackslash n}  \texttt{\textbackslash n} ``It's a big deal, and it's been a long time coming,'' says the man who started this process. ``We've had to wait for the right weather, the right year, and the right time
+  \item \textbf{My model, $T=1.0$:}  Debt EXI-s Beverage (Reuters) makes a general figure of the sometime fruit roots and grows on earth as the bear. \texttt{\textbackslash n} D\'{a}Related posts: \texttt{\textbackslash n} As of the stylist Proceedings: \texttt{\textbackslash n} The Structural facilitating foodacion
+  \item \textbf{Pythia-1.4B, $T=1.0$:}  But the sap is never sold in the open market for immediate consumption. It takes at least a week for the sap to flow from tapped Canadian [\ldots{}] \texttt{\textbackslash n}  \texttt{\textbackslash n} In this photo illustration the sap that drips by a Canadian maple tree is taken from
+\end{itemize}
+
+\paragraph{Prefix 2.} \textit{CHARLES H. MEISNER, one of the prosperous and highly-esteemed business men of Birnamwood, Shawano county, was born in Newton township, Manitowoc Co., Wis., February 14, 1860, and is a son of Frederick and Magarette (Steltzer) Meisner, both natives of Germany.}
+
+\begin{itemize}
+  \item \textbf{My model, $T=0.1$:}  \texttt{\textbackslash n} The first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the year, the first time of the
+  \item \textbf{Pythia-1.4B, $T=0.1$:}  He was educated in the public schools of Manitowoc county, and at the age of eighteen was employed in the lumber business of the town of Manitowoc, Wis., and has since been engaged in the same business in Shawano county
+  \item \textbf{My model, $T=0.5$:}  \texttt{\textbackslash n} The United States of America, the United States of America, the United States of America, the United States of America, the United States of America, the United States of America, the United States of America, the United States of America
+  \item \textbf{Pythia-1.4B, $T=0.5$:}  He was a pupil at the Shawano school, and in his early days he was employed by the Chicago, Milwaukee \& St. Paul Railway. In September, 1898, he was married to Miss Lydia (Kirk) Meisner
+  \item \textbf{My model, $T=1.0$:}  In this post by Philip workendant of Phillip \& Qual Robert's moments of Edward was now developing sexual peoples : The U.S. was out about this.] UTPR for posts. Injection Void Leaf, 1865, His curly
+  \item \textbf{Pythia-1.4B, $T=1.0$:}  The family, which numbers four sons and twelve daughters, settled in the old town of Shawano in 1857, where the sons were employed in the great mills of the country, where their father was well-known for his honest endeavors
+\end{itemize}
+
+\paragraph{Prefix 3.} \textit{EVER WONDER WHY SOME PEOPLE CAN WORK NIGHTS AND SLEEP EASILY DURING THE DAY? A new study from Tiina Pauno, a professor at the University of Helsinki, Finland found that many night workers actually have a variant in the genetic code that makes them less influenced by Melatonin and hence the circadian rhythm.}
+
+\begin{itemize}
+  \item \textbf{My model, $T=0.1$:}  \texttt{\textbackslash n} The only thing is the first time to be a few years ago, the first time to be a few years ago, the first time to be a few years ago, the first time to be a few years ago, the first time
+  \item \textbf{Pythia-1.4B, $T=0.1$:}  \texttt{\textbackslash n}  \texttt{\textbackslash n} The study, published in the journal PLOS ONE, found that the variant is associated with a lower risk of night shift work. \texttt{\textbackslash n}  \texttt{\textbackslash n} ``The variant is associated with a lower risk of night shift work,'' Pauno said.
+  \item \textbf{My model, $T=0.5$:}  The book is the first way to be part of the moment of the other people. The book is a lot of the book, and the book is the first book, but the book is to do, but the book is a book,
+  \item \textbf{Pythia-1.4B, $T=0.5$:}  \texttt{\textbackslash n}  \texttt{\textbackslash n} "It is well known that the human body is not a 24-hour clock," Pauno said. "The body has an internal clock that regulates our sleep and wakefulness. The brain is the master clock and it controls our
+  \item \textbf{My model, $T=1.0$:}  European showed the ones in the African Academy of the album was argue about caseName. Should I stick again effect in new scientific OS and190 interviews for although his mum invest for the 2019 description who would "not worry about an actual reality"
+  \item \textbf{Pythia-1.4B, $T=1.0$:}  Instead of falling asleep in the evening, the study finds that these people are "more active and alert throughout the day." The difference is enough to be noticed without their being aware of it. But, there are also some other interesting genetic differences
+\end{itemize}
+
+
+\subsection*{4.2.B}
+Near zero, sampling becomes almost greedy: generations are deterministic and highly repetitive. For example, my model loops on ``the first time of the year, the first time of the year, \ldots''. Near one, the model samples from its full distribution, so text is more diverse but also much less coherent, with off-topic or ungrammatical tokens.
+
+\subsection*{4.2.C}
+Pythia-1.4B produces fluent, on-topic continuations at every temperature, while my model only reproduces generic high-frequency phrases at low temperature and becomes incoherent at $T = 1.0$ (PPL 461 vs.\ 19.5). At low temperature my model's PPL is actually lower, but only because it is confidently stuck in repetitive loops, so low PPL here does not mean higher quality. The gap comes from scale: Pythia has about $200\times$ more parameters (1.4B vs.\ 7M), was trained on about 300B tokens versus about 2B, and uses a 2,048-token context versus 128.
+
+%==================================================================
+\section*{Question 4.3}
+
+\subsection*{4.3.A}
+Pythia-1.4B gives the Northeastern University Wikipedia paragraphs a perplexity of \textbf{7.08}. Removing every ``the'' (8 occurrences) raises it to \textbf{9.00}. ``the'' is a very predictable, low-loss token, and deleting it makes the text ungrammatical, so the model is repeatedly surprised where it expects an article before a noun.
+
+\subsection*{4.3.B}
+Original Jabberwocky: PPL \textbf{1.58}. My mimic version: PPL \textbf{16.99}. The original poem is famous and appears many times in Pythia's training data (the Pile), so the model has essentially memorized it, including the nonsense words. My invented words never appeared in training, so the model cannot predict them even though the poem's structure is the same.
+
+My mimic poem:
+\begin{verse}
+'Twas frunzig, and the glimpsy plonks \\
+Did skirl and wumble in the tarve: \\
+All flimty were the kittipoos, \\
+And the drell snorbs skwundered.
+
+``Beware the Grizzlewump, my son! \\
+The jaws that bite, the claws that catch! \\
+Beware the Flimflam bird, and shun \\
+The blusterous Quobblequatch!''
+
+He took his zindle sword in hand; \\
+Long time the crumbous foe he sought--- \\
+So rested he by the Wizwaz tree \\
+And stood awhile in thought.
+
+And, as in glumptious thought he stood, \\
+The Grizzlewump, with eyes of flame, \\
+Came snorfling through the brindlish wood, \\
+And flurbled as it came!
+
+One, two! One, two! And through and through \\
+The zindle blade went flicker-flack! \\
+He left it dead, and with its head \\
+He went bumplonking back.
+
+``And hast thou slain the Grizzlewump? \\
+Come to my arms, my glintish boy! \\
+O splendacious day! Hoozah! Hoozay!'' \\
+He snickled in his joy.
+
+'Twas frunzig, and the glimpsy plonks \\
+Did skirl and wumble in the tarve: \\
+All flimty were the kittipoos, \\
+And the drell snorbs skwundered.
+
+\end{verse}
+
+%==================================================================
+\section*{Question 5.1}
+% TODO: fill in, e.g. Claude Code (Anthropic)
+
+\section*{Question 5.2}
+% TODO: fill in
+
+\section*{Question 5.3}
+% TODO: fill in
+
+\end{document}
